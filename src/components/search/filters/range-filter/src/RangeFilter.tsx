@@ -35,6 +35,8 @@ export interface RangeFilterProps extends SearchkitComponentProps {
 	rangeFormatter?:(count:number)=> number | string
 	marks?:Object
 	fieldOptions?:FieldOptions
+  defaultMin?:number
+  defaultMax?:number
 }
 
 
@@ -72,9 +74,9 @@ export class RangeFilter extends SearchkitComponent<RangeFilterProps, any> {
 
 	defineAccessor() {
 		const { id, title, min, max, field, fieldOptions,
-			interval, showHistogram } = this.props
+			interval, showHistogram, defaultMin, defaultMax } = this.props
 		return new RangeAccessor(id,{
-			id, min, max, title, field,
+			id, min, max, defaultMin, defaultMax, title, field,
 			interval, loadHistogram:showHistogram, fieldOptions
 		})
 	}

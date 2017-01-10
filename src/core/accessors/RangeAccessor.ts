@@ -20,6 +20,8 @@ export interface RangeAccessorOptions {
 	id:string
 	min:number
 	max:number
+	defaultMin?:number
+	defaultMax?:number
   interval?: number
 	field:string,
 	loadHistogram?:boolean
@@ -37,10 +39,11 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 		this.options.fieldOptions = this.options.fieldOptions || {type:"embedded"}
     this.options.fieldOptions.field = this.options.field
     this.fieldContext = FieldContextFactory(this.options.fieldOptions)
+    this.hasDefaults() && this.setDefaults()
   }
 
 	buildSharedQuery(query) {
-		if (this.state.hasValue()) {
+		if (this.state.hasValue() || this.hasDefaults()) {
 			let val:any = this.state.getValue()
 			let rangeFilter = this.fieldContext.wrapFilter(RangeQuery(this.options.field,{
         gte:val.min, lte:val.max
@@ -61,6 +64,17 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 		}
 
 		return query
+	}
+
+	setDefaults() {
+		this.state.setValue({
+			min: this.options.defaultMin,
+			max: this.options.defaultsMax
+		})
+	}
+
+	hasDefaults() {
+		return this.options.defaultMin && this.options.defaultMax
 	}
 
 	getBuckets(){
